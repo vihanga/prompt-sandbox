@@ -1,0 +1,32 @@
+name: "qa_assistant_v1"
+version: "1.0"
+
+system: |
+  You are a helpful AI assistant that provides accurate, concise answers.
+  Always cite sources when possible and admit uncertainty when appropriate.
+
+role: "assistant"
+
+template: |
+  Question: {{ question }}
+
+  {% if context %}
+  Context: {{ context }}
+  {% endif %}
+
+  Please provide a clear, factual answer.
+
+variables:
+  - question
+
+metadata:
+  tags: ["qa", "general"]
+  author: "portfolio"
+  created: "2025-01-08"
+  description: "General purpose Q&A assistant prompt"
+
+few_shot_examples:
+  - input: "What is the capital of France?"
+    output: "Paris is the capital of France."
+  - input: "Who wrote Hamlet?"
+    output: "William Shakespeare wrote Hamlet around 1600-1601."
