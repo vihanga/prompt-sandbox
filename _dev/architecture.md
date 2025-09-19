@@ -87,41 +87,42 @@ Build a production-ready framework for systematic prompt engineering that enable
 ```
 prompt-sandbox/
 ├── src/
-│   ├── __init__.py
-│   ├── config/
-│   │   ├── __init__.py
-│   │   ├── schema.py          # Pydantic models for validation
-│   │   ├── loader.py          # YAML loading with Hydra
-│   │   └── validator.py       # Config consistency checks
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── base.py            # Abstract model interface
-│   │   ├── hf_model.py        # Hugging Face implementation
-│   │   ├── vllm_model.py      # vLLM implementation (optional)
-│   │   └── loader.py          # Model factory pattern
-│   ├── prompts/
-│   │   ├── __init__.py
-│   │   ├── template.py        # Jinja2 template rendering
-│   │   ├── stack.py           # System+role+content composition
-│   │   └── variables.py       # Variable injection logic
-│   ├── evaluators/
-│   │   ├── __init__.py
-│   │   ├── base.py            # Abstract evaluator
-│   │   ├── bleu.py            # BLEU score implementation
-│   │   ├── bertscore.py       # BERTScore wrapper
-│   │   ├── rouge.py           # ROUGE metrics
-│   │   ├── faithfulness.py    # NLI-based checker
-│   │   └── perplexity.py      # Model-intrinsic metric
-│   ├── experiments/
-│   │   ├── __init__.py
-│   │   ├── runner.py          # Main experiment orchestration
-│   │   ├── results.py         # Results data models
-│   │   └── comparison.py      # Side-by-side analysis
-│   └── utils/
+│   └── prompt_sandbox/        # Main package (snake_case)
 │       ├── __init__.py
-│       ├── logging.py         # Structured logging setup
-│       ├── caching.py         # Result caching (joblib)
-│       └── metrics.py         # Metric aggregation helpers
+│       ├── config/
+│       │   ├── __init__.py
+│       │   ├── schema.py          # Pydantic models for validation
+│       │   ├── loader.py          # YAML loading with Hydra
+│       │   └── validator.py       # Config consistency checks
+│       ├── models/
+│       │   ├── __init__.py
+│       │   ├── base.py            # Abstract model interface
+│       │   ├── hf_model.py        # Hugging Face implementation
+│       │   ├── vllm_model.py      # vLLM implementation (optional)
+│       │   └── loader.py          # Model factory pattern
+│       ├── prompts/
+│       │   ├── __init__.py
+│       │   ├── template.py        # Jinja2 template rendering
+│       │   ├── stack.py           # System+role+content composition
+│       │   └── variables.py       # Variable injection logic
+│       ├── evaluators/
+│       │   ├── __init__.py
+│       │   ├── base.py            # Abstract evaluator
+│       │   ├── bleu.py            # BLEU score implementation
+│       │   ├── bertscore.py       # BERTScore wrapper
+│       │   ├── rouge.py           # ROUGE metrics
+│       │   ├── faithfulness.py    # NLI-based checker
+│       │   └── perplexity.py      # Model-intrinsic metric
+│       ├── experiments/
+│       │   ├── __init__.py
+│       │   ├── runner.py          # Main experiment orchestration
+│       │   ├── results.py         # Results data models
+│       │   └── comparison.py      # Side-by-side analysis
+│       └── utils/
+│           ├── __init__.py
+│           ├── logging.py         # Structured logging setup
+│           ├── caching.py         # Result caching (joblib)
+│           └── metrics.py         # Metric aggregation helpers
 ├── configs/
 │   ├── prompts/
 │   │   ├── qa_assistant.yaml
@@ -165,12 +166,13 @@ prompt-sandbox/
 │   ├── api_reference.md
 │   ├── prompt_design_guide.md
 │   └── evaluation_metrics.md
-├── requirements.txt
-├── requirements-dev.txt
-├── setup.py
 ├── pyproject.toml
 ├── README.md
-└── _dev.md (this file)
+└── _dev/                      # Public development docs (in git)
+    ├── architecture.md (this file)
+    ├── implementation_notes.md
+    ├── technical_challenges.md
+    └── api_reference.md
 ```
 
 ---
@@ -182,7 +184,7 @@ prompt-sandbox/
 **Schema Design** (Pydantic):
 
 ```python
-# src/config/schema.py
+# src/prompt_sandbox/config/schema.py
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 
@@ -252,7 +254,7 @@ few_shot_examples:
 **Interface Design**:
 
 ```python
-# src/models/base.py
+# src/prompt_sandbox/models/base.py
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from dataclasses import dataclass
@@ -301,7 +303,7 @@ class BaseModel(ABC):
 **Hugging Face Implementation**:
 
 ```python
-# src/models/hf_model.py
+# src/prompt_sandbox/models/hf_model.py
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from .base import BaseModel, GenerationConfig
@@ -351,7 +353,7 @@ class HuggingFaceModel(BaseModel):
 **Faithfulness Checker** (Advanced):
 
 ```python
-# src/evaluators/faithfulness.py
+# src/prompt_sandbox/evaluators/faithfulness.py
 from transformers import pipeline
 from .base import BaseEvaluator
 
@@ -418,7 +420,7 @@ class FaithfulnessEvaluator(BaseEvaluator):
 **Async Execution Pattern**:
 
 ```python
-# src/experiments/runner.py
+# src/prompt_sandbox/experiments/runner.py
 import asyncio
 from typing import List, Dict
 from dataclasses import dataclass

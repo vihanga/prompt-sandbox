@@ -4,14 +4,11 @@ Quickstart example for Prompt-Sandbox
 Demonstrates basic usage of prompt templates and configuration loading.
 """
 
-import sys
 from pathlib import Path
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
-from config.loader import ConfigLoader
-from prompts.template import PromptTemplate
+# Import from installed package
+from prompt_sandbox.config.loader import ConfigLoader
+from prompt_sandbox.prompts.template import PromptTemplate
 
 
 def main():

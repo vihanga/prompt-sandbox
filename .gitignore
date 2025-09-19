@@ -1,3 +1,12 @@
+# Development documentation (keep in git)
+# Uncomment below to exclude _dev/ from version control
+# _dev/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
