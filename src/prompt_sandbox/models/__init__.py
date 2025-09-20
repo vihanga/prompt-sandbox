@@ -4,5 +4,6 @@ Model backends for LLM inference
 
 from .base import ModelBackend, GenerationResult
 from .huggingface import HuggingFaceBackend
+from .ollama import OllamaBackend
 
-__all__ = ["ModelBackend", "GenerationResult", "HuggingFaceBackend"]
+__all__ = ["ModelBackend", "GenerationResult", "HuggingFaceBackend", "OllamaBackend"]
