@@ -6,6 +6,7 @@ import asyncio
 import time
 from typing import List
 from .runner import ExperimentConfig, ExperimentResult, ExperimentRunner
+from ..utils.retry import retry_with_backoff
 
 
 class AsyncExperimentRunner(ExperimentRunner):
@@ -58,13 +59,14 @@ class AsyncExperimentRunner(ExperimentRunner):
 
         return self.results
 
+    @retry_with_backoff(max_retries=3, initial_delay=1.0)
     async def _run_single_async(self, prompt, model, idx, test_case):
-        """Run a single experiment asynchronously"""
+        """Run a single experiment asynchronously with retry logic"""
 
         # Render prompt
         rendered_prompt = prompt.render(**test_case["input"])
 
-        # Generate response (async)
+        # Generate response (async) - will retry on failure
         generation_result = await model.generate_async(rendered_prompt)
 
         # Evaluate against reference
