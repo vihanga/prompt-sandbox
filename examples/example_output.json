@@ -1,0 +1,39 @@
+{
+  "experiment_name": "cli_test_experiment",
+  "description": null,
+  "num_results": 2,
+  "results": [
+    {
+      "experiment_name": "cli_test_experiment",
+      "prompt_name": "direct_qa",
+      "model_name": "gpt2",
+      "test_case_id": 0,
+      "input_data": {
+        "question": "What is 2+2?"
+      },
+      "generated_text": "It's a number between 0-3 that represents the number of days you are on the job. If you're in a position where you have an average of three days a week, then 2+2 is the number of days you are on the job. If you have an average of four days a week, then 2+4 is the number of days you are on the job.\nQ: What are the most important things to do in your job?\nA: Work hard. Don't get distracted. Don't be afraid to be creative. Be creative with yourself and with your family. Be creative with your family, your coworkers, your friends, your family's friends, and even your boss.\nQ: What do you do for a living?\nA: Work at a small business, or at a small restaurant. Work at a small business at a small restaurant. Work at a small restaurant at a small restaurant.\nQ: What are your hobbies?\nA: Find time to spend with your family, friends, or pets. Be creative with yourself and with your family. Be creative with your family, friends, or pets.\nQ: Do you have any tips for people who want to work in your field?\nA: You can ask the right person. Ask the right person. Ask the right person.\nQ: What do you do when you feel like you're not doing well?\nA: Write down things that will help you get better at your job. Write down things that will help you get better at your job.\nQ: What are some things that you do that are a good thing?\nA: Work hard. Don't get distracted. Don't get distracted with your family. Don't get distracted with your family, your coworkers, your friends, your family's friends, and even your boss.\nQ: What is your favorite part of your job?\nA: Find a job that makes you feel good about yourself. Find a job that makes you feel good about yourself.\nQ: What are some other things that you do that you would like to see you do?\nA: Create an online community. Create an online community. Create an online community.\nQ: Do you have any tips for people who want to work in your field?\nA: Write down things that will help you get better at your job. Write down things that will help you get better at your job.\nQ: Do you have any tips for people who want to work",
+      "reference_text": "4",
+      "generation_time": 15.832979917526245,
+      "evaluation_scores": {
+        "bleu": 0.07342769339719375
+      },
+      "timestamp": 1761484824.410626
+    },
+    {
+      "experiment_name": "cli_test_experiment",
+      "prompt_name": "direct_qa",
+      "model_name": "gpt2",
+      "test_case_id": 1,
+      "input_data": {
+        "question": "What color is the sky?"
+      },
+      "generated_text": "The sky is blue.\nQ: Why is the sky blue?\nA: It's because of the moon.\nQ: What is the moon's color?\nA: It's because of the sun.\nQ: Why is the moon's color blue?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: Why is the moon's color blue?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the moon's color?\nA: It's because of the stars.\nQ: What is the",
+      "reference_text": "blue",
+      "generation_time": 15.832002878189087,
+      "evaluation_scores": {
+        "bleu": 0.08612782020066503
+      },
+      "timestamp": 1761484824.410028
+    }
+  ]
+}

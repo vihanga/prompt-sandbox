@@ -1,0 +1,23 @@
+name: "cli_test_experiment"
+
+prompts:
+  - name: "direct_qa"
+    template: "Q: {{question}}\nA:"
+    variables: ["question"]
+
+models:
+  - type: "huggingface"
+    name: "gpt2"
+
+evaluators:
+  - "bleu"
+
+test_cases:
+  - input:
+      question: "What is 2+2?"
+    expected_output: "4"
+  - input:
+      question: "What color is the sky?"
+    expected_output: "blue"
+
+output_dir: "test_results"
