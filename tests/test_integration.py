@@ -7,6 +7,7 @@ import pytest
 from pathlib import Path
 import tempfile
 import shutil
+from typing import List
 
 from prompt_sandbox.config.schema import PromptConfig
 from prompt_sandbox.prompts.template import PromptTemplate
@@ -33,17 +34,35 @@ class MockModelBackend(ModelBackend):
             response = "This is a test response."
 
         return GenerationResult(
+            text=response,
+            model_name=self.model_name,
             prompt=prompt,
-            generated_text=response,
-            tokens_generated=len(response.split()),
-            generation_time=0.1,
-            model_name=self.model_name
+            generation_time=0.1
         )
 
     async def generate_async(self, prompt: str, max_new_tokens: int = 512,
                             temperature: float = 0.7, top_p: float = 0.9, **kwargs) -> GenerationResult:
         await asyncio.sleep(0.01)  # Simulate async delay
         return self.generate(prompt, max_new_tokens, temperature, top_p, **kwargs)
+
+    def generate_batch(self, prompts: List[str], max_new_tokens: int = 512,
+                      temperature: float = 0.7, top_p: float = 0.9, **kwargs) -> List[GenerationResult]:
+        """Batch generation - process all prompts"""
+        return [self.generate(prompt, max_new_tokens, temperature, top_p, **kwargs)
+                for prompt in prompts]
+
+    async def generate_batch_async(self, prompts: List[str], max_new_tokens: int = 512,
+                                   temperature: float = 0.7, top_p: float = 0.9, **kwargs) -> List[GenerationResult]:
+        """Async batch generation - process all prompts concurrently"""
+        import asyncio
+        return await asyncio.gather(*[
+            self.generate_async(prompt, max_new_tokens, temperature, top_p, **kwargs)
+            for prompt in prompts
+        ])
+
+    def close(self):
+        """Cleanup - no resources to clean up for mock"""
+        pass
 
 
 @pytest.fixture
@@ -113,15 +132,15 @@ async def test_full_experiment_workflow(temp_output_dir, sample_prompts, sample_
     assert len(results) == len(sample_prompts) * len(sample_test_cases)
 
     for result in results:
-        assert "prompt_name" in result
-        assert "model_name" in result
-        assert "test_case_idx" in result
-        assert "input" in result
-        assert "expected_output" in result
-        assert "actual_output" in result
-        assert "evaluation_scores" in result
-        assert "bleu" in result["evaluation_scores"]
-        assert "rouge" in result["evaluation_scores"]
+        assert hasattr(result, 'prompt_name')
+        assert hasattr(result, 'model_name')
+        assert hasattr(result, 'test_case_id')
+        assert hasattr(result, 'input_data')
+        assert hasattr(result, 'reference_text')
+        assert hasattr(result, 'generated_text')
+        assert hasattr(result, 'evaluation_scores')
+        assert "bleu" in result.evaluation_scores
+        assert "rouge" in result.evaluation_scores
 
     # Verify summary generation
     summary = runner.get_summary()
@@ -165,10 +184,10 @@ async def test_result_storage_and_retrieval(temp_output_dir, sample_prompts, sam
     assert len(loaded_results) == len(original_results)
 
     for orig, loaded in zip(original_results, loaded_results):
-        assert orig["prompt_name"] == loaded["prompt_name"]
-        assert orig["model_name"] == loaded["model_name"]
-        assert orig["actual_output"] == loaded["actual_output"]
-        assert orig["evaluation_scores"] == loaded["evaluation_scores"]
+        assert orig.prompt_name == loaded["prompt_name"]
+        assert orig.model_name == loaded["model_name"]
+        assert orig.generated_text == loaded["generated_text"]
+        assert orig.evaluation_scores == loaded["evaluation_scores"]
 
 
 @pytest.mark.asyncio
@@ -194,7 +213,7 @@ async def test_multi_model_comparison(temp_output_dir, sample_prompts, sample_te
     results = await runner.run_async()
 
     # Verify results for both models
-    model_names = {r["model_name"] for r in results}
+    model_names = {r.model_name for r in results}
     assert model_names == {"model-a", "model-b"}
 
     # Verify summary has entries for both models
@@ -230,7 +249,7 @@ async def test_experiment_with_comparator(temp_output_dir, sample_prompts, sampl
     best_prompt, score = comparator.get_best_prompt("comparator-test", "bleu")
     assert best_prompt in ["direct_prompt", "cot_prompt"]
     assert isinstance(score, float)
-    assert 0.0 <= score <= 1.0
+    assert 0.0 <= score <= 100.0  # BLEU score range is 0-100
 
 
 def test_prompt_template_rendering(sample_prompts):
@@ -267,15 +286,23 @@ async def test_error_handling_in_experiment(temp_output_dir, sample_test_cases):
                 raise Exception("Simulated API error")
 
             return GenerationResult(
+                text="Success after retry",
+                model_name=self.model_name,
                 prompt=prompt,
-                generated_text="Success after retry",
-                tokens_generated=3,
-                generation_time=0.1,
-                model_name=self.model_name
+                generation_time=0.1
             )
 
         def generate(self, prompt: str, **kwargs) -> GenerationResult:
             return asyncio.run(self.generate_async(prompt, **kwargs))
+
+        def generate_batch(self, prompts: List[str], **kwargs) -> List[GenerationResult]:
+            return [self.generate(p, **kwargs) for p in prompts]
+
+        async def generate_batch_async(self, prompts: List[str], **kwargs) -> List[GenerationResult]:
+            return await asyncio.gather(*[self.generate_async(p, **kwargs) for p in prompts])
+
+        def close(self):
+            pass
 
     model = FailingModel()
     prompt = PromptTemplate(PromptConfig(
@@ -299,4 +326,4 @@ async def test_error_handling_in_experiment(temp_output_dir, sample_test_cases):
 
     # Should succeed after retry
     assert len(results) == 1
-    assert results[0]["actual_output"] == "Success after retry"
+    assert results[0].generated_text == "Success after retry"

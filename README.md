@@ -1,19 +1,52 @@
 # Prompt-Sandbox
 
-A production-ready framework for systematic prompt engineering with LLMs. Compare prompts across models, evaluate with multiple metrics, and discover insights through reproducible experiments.
+A framework for playing with LLM prompts systematically. I built this because I got tired of manually testing prompt variations and wanted a way to compare them properly with actual metrics.
 
-## Features
+Turns out testing prompts methodically is way more effective than just trying random things in ChatGPT. Who knew? 🤷
 
-- **Config-Driven Prompts**: YAML-based prompt templates with Jinja2 rendering and variable substitution
-- **Multi-Model Support**: Hugging Face Transformers, Ollama (100% local and free), OpenAI API (optional)
-- **Comprehensive Evaluation**: BLEU, ROUGE, BERTScore with semantic similarity scoring
-- **Async Execution**: Parallel experiment runs with asyncio for 10-50x speedup
-- **Results Analysis**: Statistical comparisons, visualization (charts, heatmaps), and best configuration detection
-- **Persistent Storage**: JSON and SQLite backends with queryable experiment history
-- **CLI Tools**: Command-line interface for project initialization, experiment execution, and result comparison
-- **Error Handling**: Automatic retry logic with exponential backoff for API failures
+## What I Built
 
-**Note**: This project works 100% locally with free models (Ollama, Hugging Face). OpenAI API is **optional** for users who want to compare against GPT models.
+Started as a weekend project to compare a few prompts, ended up building a full experiment framework:
+
+- **Config-Driven Prompts**: YAML templates with Jinja2 (because editing prompts in code files is annoying)
+- **Multiple Models**: Works with HuggingFace, Ollama - everything runs locally and free
+- **Real Metrics**: BLEU, ROUGE, BERTScore (not just vibes-based evaluation)
+- **Async Execution**: Runs experiments in parallel because waiting is boring (10-50x faster)
+- **Comparison Tools**: Stats, charts, "which prompt actually won" detection
+- **CLI**: Because sometimes you just want to run `prompt-sandbox eval config.yaml`
+
+Everything works 100% locally with free models. No API keys required (unless you want to compare against GPT models).
+
+## Experiments I Ran
+
+I used this framework to test some prompt engineering techniques I'd read about. Turned out pretty interesting:
+
+### 📊 [Few-Shot Learning Optimization](notebooks/01_few_shot_learning_optimization.ipynb)
+> **Finding**: 3-5 examples hit the sweet spot for classification tasks. More examples = diminishing returns + higher token costs.
+
+Tested 0-shot through 10-shot on customer support ticket classification. The curve levels off hard after 5 examples - adding more just burns tokens without much accuracy gain.
+
+### 🧠 [Chain-of-Thought Prompting](notebooks/02_chain_of_thought_reasoning.ipynb)
+> **Finding**: Asking the model to "show its work" legitimately helps on multi-step problems. Not just hype.
+
+Math word problems saw ~40-60% improvement when using CoT vs direct answers. The trick is forcing the model to break down reasoning into steps - catches errors early in the logic chain.
+
+### 🎭 [Role & Tone Engineering](notebooks/03_role_and_tone_engineering.ipynb)
+> **Finding**: Defining explicit roles changes output style in measurable ways. "Professional expert" vs "friendly guide" = 50%+ difference in language markers.
+
+Tested product descriptions with different personas. Role prompting isn't magic, but it's a reliable way to control tone and maintain consistency across outputs.
+
+> **Note**: GitHub shows notebooks as static HTML. To actually run them, clone the repo and open with Jupyter. They use small models (GPT-2) so they'll work on most machines without GPU - just takes a few minutes per experiment.
+
+## How It Works
+
+The framework has a few pieces that fit together:
+
+- **Prompt Templates**: Define prompts in YAML with variables (way cleaner than string formatting)
+- **Model Backends**: Pluggable interfaces for HuggingFace, Ollama, etc.
+- **Evaluators**: Actual NLP metrics (BLEU, ROUGE, BERTScore) to measure quality
+- **Experiment Runner**: Async orchestration that runs all combos of (prompts × models × test cases)
+- **Storage & Comparison**: Saves everything, lets you compare results statistically
 
 ## Installation
 

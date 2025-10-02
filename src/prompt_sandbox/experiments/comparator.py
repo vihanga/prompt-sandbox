@@ -19,9 +19,16 @@ class ResultComparator:
         Initialize comparator with results
 
         Args:
-            results: List of ExperimentResult objects
+            results: List of ExperimentResult objects or dicts from storage
         """
         self.results = results
+
+    @staticmethod
+    def _get_field(result, field_name: str):
+        """Helper to get field from either dataclass or dict"""
+        if isinstance(result, dict):
+            return result.get(field_name)
+        return getattr(result, field_name, None)
 
     def compare_prompts(
         self,
@@ -42,14 +49,16 @@ class ResultComparator:
         prompt_scores: Dict[str, List[float]] = {}
 
         for result in self.results:
-            if result.model_name == model_name:
-                if result.prompt_name not in prompt_scores:
-                    prompt_scores[result.prompt_name] = []
+            result_model = self._get_field(result, 'model_name')
+            result_prompt = self._get_field(result, 'prompt_name')
+            result_scores = self._get_field(result, 'evaluation_scores')
 
-                if metric in result.evaluation_scores:
-                    prompt_scores[result.prompt_name].append(
-                        result.evaluation_scores[metric]
-                    )
+            if result_model == model_name:
+                if result_prompt not in prompt_scores:
+                    prompt_scores[result_prompt] = []
+
+                if result_scores and metric in result_scores:
+                    prompt_scores[result_prompt].append(result_scores[metric])
 
         # Calculate statistics for each prompt
         comparison = {}
@@ -85,14 +94,16 @@ class ResultComparator:
         model_scores: Dict[str, List[float]] = {}
 
         for result in self.results:
-            if result.prompt_name == prompt_name:
-                if result.model_name not in model_scores:
-                    model_scores[result.model_name] = []
+            result_model = self._get_field(result, 'model_name')
+            result_prompt = self._get_field(result, 'prompt_name')
+            result_scores = self._get_field(result, 'evaluation_scores')
 
-                if metric in result.evaluation_scores:
-                    model_scores[result.model_name].append(
-                        result.evaluation_scores[metric]
-                    )
+            if result_prompt == prompt_name:
+                if result_model not in model_scores:
+                    model_scores[result_model] = []
+
+                if result_scores and metric in result_scores:
+                    model_scores[result_model].append(result_scores[metric])
 
         # Calculate statistics for each model
         comparison = {}

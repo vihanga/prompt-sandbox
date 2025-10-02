@@ -20,7 +20,7 @@ class TestBLEUEvaluator:
 
         result = self.evaluator.evaluate(generated, reference)
 
-        assert result.score == 100.0
+        assert result.score == pytest.approx(100.0, rel=1e-9)
         assert result.metric_name == "bleu"
 
     def test_partial_match(self):

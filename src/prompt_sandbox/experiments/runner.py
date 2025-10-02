@@ -3,6 +3,7 @@ Experiment runner for orchestrating prompt evaluations
 """
 
 import time
+import statistics
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 from pathlib import Path
@@ -212,8 +213,10 @@ class ExperimentRunner:
 
             for metric, scores in data["scores"].items():
                 avg_score = sum(scores) / len(scores) if scores else 0
+                std_dev = statistics.stdev(scores) if len(scores) > 1 else 0.0
                 data["scores"][metric] = {
                     "mean": avg_score,
+                    "std": std_dev,
                     "min": min(scores) if scores else 0,
                     "max": max(scores) if scores else 0,
                     "count": len(scores)
