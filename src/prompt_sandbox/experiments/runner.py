@@ -82,7 +82,7 @@ class ExperimentRunner:
             print(f"\n📝 Testing prompt: {prompt.name}")
 
             for model in self.config.models:
-                print(f"  🤖 Model: {model.model_name}")
+                print(f"  Model: {model.model_name}")
 
                 for idx, test_case in enumerate(self.config.test_cases):
                     total_runs += 1
